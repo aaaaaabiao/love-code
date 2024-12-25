@@ -9,6 +9,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 防止移动端双击缩放 -->
+    <style>
+        * {
+            touch-action: manipulation;
+        }
+    </style>
     <title>Merry Christmas</title>
     <style>
       body {
@@ -449,6 +456,75 @@
     let treePath = getSVGPoints(".treePath");
 
     var treeBottomPath = getSVGPoints(".treeBottomPath");
+
+    function handleInteraction(event) {
+                event.preventDefault();
+
+                let x, y;
+
+                if (event.type === 'touchstart') {
+                    x = event.touches[0].clientX;
+                    y = event.touches[0].clientY;
+                } else if (event.type === 'click') {
+                    x = event.clientX;
+                    y = event.clientY;
+                }
+
+                let pt = mainSVG.createSVGPoint();
+                pt.x = x;
+                pt.y = y;
+                let svgCoords = pt.matrixTransform(mainSVG.getScreenCTM().inverse());
+
+                if (showParticle) {
+                    particleCount++;
+                    if (particleCount > numParticles) {
+                        particleCount = 1;
+                    }
+
+                    var angle = Math.random() * Math.PI * 2;
+                    var particleRadius = Math.random() * 0.5 + 3.5;
+                    var particlePath = particleTypeArray[Math.floor(Math.random() * particleTypeArray.length)];
+                    var rgb = particleColorArray[Math.floor(Math.random() * particleColorArray.length)];
+
+                    var particleElement = document.createElementNS(xmlns, "use");
+                    particleElement.setAttributeNS(xlinkns, "xlink:href", particlePath);
+                    particleElement.setAttribute("class", "particle");
+                    particleElement.setAttribute("transform", "translate(" + svgCoords.x + " " + svgCoords.y + ") scale(" + particleRadius + ")");
+                    particleElement.setAttribute("fill", rgb);
+                    particleElement.setAttribute("opacity", 0);
+                    pContainer.appendChild(particleElement);
+
+                    var tl = gsap.timeline();
+                    tl.to(particleElement, {
+                        duration: 0.6,
+                        opacity: 1,
+                        ease: "power1.inOut"
+                    });
+                    tl.to(particleElement, {
+                        duration: 1,
+                        x: Math.cos(angle) * 50,
+                        y: Math.sin(angle) * 50,
+                        ease: "power1.out"
+                    }, '-=0.6');
+                    tl.to(particleElement, {
+                        duration: 0.3,
+                        opacity: 0,
+                        ease: "power1.inOut",
+                        onComplete: function () {
+                            pContainer.removeChild(particleElement);
+                        }
+                    });
+                }
+            }
+
+            // 添加触摸事件监听
+            mainSVG.addEventListener('touchstart', handleInteraction, { passive: false });
+
+            // 添加鼠标点击事件监听
+            mainSVG.addEventListener('click', handleInteraction);
+
+            var mainTl = gsap.timeline({ delay: 0.5 });
+
 
     //console.log(starPath.length)
     var mainTl = gsap.timeline({ delay: 0, repeat: 0 }),
