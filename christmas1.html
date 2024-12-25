@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>圣诞快乐</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: black;
+        overflow: hidden;
+      }
+
+      #stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      .mainSVG {
+        width: 100%;
+        height: 100vh;
+      }
+
+      .sparkle {
+        /* mix-blend-mode: overlay; */
+        mix-blend-mode: color-dodge;
+      }
+
+      .particle {
+        mix-blend-mode: color-dodge;
+      }
+
+      #mask {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.93);
+        color: white;
+        font-size: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 999;
+      }
+
+      #header {
+        position: fixed;
+        top: 30px;
+        text-align: center;
+        width: 100%;
+      }
+
+      .header-item {
+        color: white;
+        font-size: 30px;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 1s;
+      }
+
+      .header-item.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mask">点击屏幕开始</div>
+    <div id="header"></div>
+    <canvas id="stars"></canvas>
+    <svg
+      class="mainSVG"
+      viewBox="0 0 800 600"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient
+          id="fade"
+          gradientUnits="userSpaceOnUse"
+          x1="434.439"
+          y1="500.526"
+          x2="436.918"
+          y2="18.836"
+        >
+          <stop offset="0" stop-color="#1C0220" />
+          <stop offset="0.738" stop-color="#11002D" />
+        </linearGradient>
+
+        <radialGradient
+          id="star"
+          cx="0.5"
+          cy="0.5"
+          r="0.5"
+          gradientUnits="objectBoundingBox"
+        >
+          <stop offset="0" stop-color="#FFFFFF" />
+          <stop offset="0.336" stop-color="#fff" />
+          <stop offset="1" stop-color="#fff" stop-opacity="0" />
+        </radialGradient>
+
+        <mask id="treePathMask">
+          <path
+            class="treePathMask"
+            fill="none"
+            stroke-width="18"
+            stroke="#FFF"
+            d="M 450 442 v -300 l -90 90 h 60 l -120 120 h 60 l -120 120 h 60 l -120 120"
+          />
+        </mask>
+
+        <mask id="treeBottomMask">
+          <path
+            class="treeBottomMask"
+            fill="none"
+            stroke-width="18"
+            stroke="#FFF"
+            d="M0,0"
+          />
+        </mask>
+
+        <mask id="treePotMask">
+          <path
+            class="treePotMask"
+            fill="none"
+            stroke-width="8"
+            stroke="#FFF"
+            d="M 430 442 h -60 a 30 30 0 0 0 -30 30 v 50 h 120 v -50 a 30 30 0 0 0 -30 -30"
+          />
+        </mask>
+
+        <g id="star">
+          <circle fill="url(#star)" cx="10" cy="10" r="10" />
+        </g>
+
+        <g id="cross">
+          <path
+            fill="#FFF"
+            d="M7.6,4l2.8-2.8c0.2-0.2,0.2-0.5,0-0.7C10.2,0.2,9.9,0.2,9.7,0.4L6.9,3.2L4.1,0.4
+        C3.9,0.2,3.6,0.2,3.4,0.4c-0.2,0.2-0.2,0.5,0,0.7L6.1,4L3.4,6.8c-0.2,0.2-0.2,0.5,0,0.7c0.1,0.1,0.2,0.1,0.4,0.1
+        c0.1,0,0.3-0.1,0.4-0.1l2.8-2.8l2.8,2.8c0.1,0.1,0.2,0.1,0.4,0.1c0.1,0,0.3-0.1,0.4-0.1c0.2-0.2,0.2-0.5,0-0.7L7.6,4z"
+          />
+        </g>
+
+        <g id="heart">
+          <path
+            fill="#FFF"
+            d="M7.5,2.5c-0.5-0.5-1.3-0.5-1.8,0L5,3.2L4.3,2.5c-0.5-0.5-1.3-0.5-1.8,0s-0.5,1.3,0,1.8L5,6.7l2.5-2.5
+        C8,3.7,8,2.9,7.5,2.5z"
+          />
+        </g>
+
+        <g id="circ">
+          <circle fill="#FFF" cx="5" cy="5" r="2.5" />
+        </g>
+      </defs>
+
+      <g class="whole">
+        <rect
+          fill="url(#fade)"
+          width="100%"
+          height="100%"
+          fill-opacity="0.85"
+        />
+
+        <g class="treePath" mask="url(#treePathMask)">
+          <path
+            class="treePathSolid"
+            fill="none"
+            stroke-width="18"
+            stroke="#00BE93"
+            d="M 450 442 v -300 l -90 90 h 60 l -120 120 h 60 l -120 120 h 60 l -120 120"
+          />
+        </g>
+
+        <g class="treePot" mask="url(#treePotMask)">
+          <path
+            class="treePotSolid"
+            fill="none"
+            stroke-width="8"
+            stroke="#00BE93"
+            d="M 430 442 h -60 a 30 30 0 0 0 -30 30 v 50 h 120 v -50 a 30 30 0 0 0 -30 -30"
+          />
+        </g>
+
+        <g class="treeBottom" mask="url(#treeBottomMask)">
+          <path
+            class="treeBottomSolid"
+            fill="none"
+            stroke-width="18"
+            stroke="#00BE93"
+            d="M0,0"
+          />
+        </g>
+
+        <circle
+          class="sparkle"
+          fill="url(#star)"
+          cx="0"
+          cy="0"
+          r="50"
+          style="mix-blend-mode: overlay"
+        />
+
+        <g class="treeStar" transform="translate(450, 142) scale(0)">
+          <g class="treeStarOutline">
+            <path
+              fill="none"
+              stroke="#FF94B1"
+              stroke-width="2"
+              d="M0,-10.3l2.4,7.3h7.6l-6.2,4.5l2.4,7.3L0,4.2l-6.2,4.5l2.4-7.3L-10,
+          -3l7.6,0L0,-10.3z"
+            />
+          </g>
+
+          <path
+            fill="#FF94B1"
+            d="M0,-10.3l2.4,7.3h7.6l-6.2,4.5l2.4,7.3L0,4.2l-6.2,4.5l2.4-7.3L-10,
+          -3l7.6,0L0,-10.3z"
+          />
+        </g>
+
+        <g class="pContainer"></g>
+      </g>
+    </svg>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/MotionPathPlugin.min.js"></script>
+    <script>
+      MorphSVGPlugin.convertToPath("polygon");
+      var xmlns = "http://www.w3.org/2000/svg",
+        xlinkns = "http://www.w3.org/1999/xlink",
+        select = function (s) {
+          return document.querySelector(s);
+        },
+        selectAll = function (s) {
+          return document.querySelectorAll(s);
+        },
+        pContainer = select(".pContainer"),
+        mainSVG = select(".mainSVG"),
+        star = select("#star"),
+        sparkle = select(".sparkle"),
+        tree = select("#tree"),
+        showParticle = true,
+        particleColorArray = [
+          "#E8F6F8",
+          "#ACE8F8",
+          "#F6FBFE",
+          "#A2CBDC",
+          "#B74551",
+          "#5DBA72",
+          "#910B28",
+          "#910B28",
+          "#446D39",
+        ],
+        particleTypeArray = ["#star", "#circ", "#cross", "#heart"],
+        particlePool = [],
+        particleCount = 0,
+        numParticles = 201;
+
+      // gsap动画库
+      gsap.set("svg", {
+        visibility: "visible",
+      });
+
+      gsap.set(sparkle, {
+        transformOrigin: "50% 50%",
+        y: -100,
+      });
+
+      let getSVGPoints = (path) => {
+        let arr = [];
+        var rawPath = MotionPathPlugin.getRawPath(path)[0];
+        rawPath.forEach((el, value) => {
+          let obj = {};
+          obj.x = rawPath[value * 2];
+          obj.y = rawPath[value * 2 + 1];
+          if (value % 2) {
+            arr.push(obj);
+          }
+        });
+
+        return arr;
+      };
+      let treePath = getSVGPoints(".treePath");
+
+      var treeBottomPath = getSVGPoints(".treeBottomPath");
+
+      var mainTl = gsap.timeline({ delay: 0, repeat: 0 }),
+        starTl;
+
+      function flicker(p) {
+        gsap.killTweensOf(p, { opacity: true });
+        gsap.fromTo(
+          p,
+          {
+            opacity: 1,
+          },
+          {
+            duration: 0.07,
+            opacity: Math.random(),
+            repeat: -1,
+          }
+        );
+      }
+
+      function createParticles() {
+        var i = numParticles,
+          p,
+          particleTl,
+          step = numParticles / treePath.length,
+          pos;
+        while (--i > -1) {
+          p = select(particleTypeArray[i % particleTypeArray.length]).cloneNode(
+            true
+          );
+          mainSVG.appendChild(p);
+          p.setAttribute(
+            "fill",
+            particleColorArray[i % particleColorArray.length]
+          );
+          p.setAttribute("class", "particle");
+          particlePool.push(p);
+          //hide them initially
+          gsap.set(p, {
+            x: -100,
+            y: -100,
+            transformOrigin: "50% 50%",
+          });
+        }
+      }
+
+      var getScale = gsap.utils.random(0.5, 3, 0.001, true);
+
+      function playParticle(p) {
+        if (!showParticle) {
+          return;
+        }
+        var p = particlePool[particleCount];
+        gsap.set(p, {
+          x: gsap.getProperty(".pContainer", "x"),
+          y: gsap.getProperty(".pContainer", "y"),
+          scale: getScale(),
+        });
+        var tl = gsap.timeline();
+        tl.to(p, {
+          duration: gsap.utils.random(0.61, 6),
+          x: gsap.utils.random(-100, 100),
+          y: gsap.utils.random(-100, 100),
+          scale: 0,
+          rotation: gsap.utils.random(-123, 360),
+          ease: "power1",
+          onStart: flicker,
+          onStartParams: [p],
+        });
+
+        particleCount++;
+        particleCount = particleCount >= numParticles ? 0 : particleCount;
+      }
+
+      function drawStar() {
+        starTl = gsap.timeline({ onUpdate: playParticle });
+        starTl
+          .to(".pContainer, .sparkle", {
+            duration: 6,
+            motionPath: {
+              path: ".treePath",
+              autoRotate: false,
+            },
+            ease: "linear",
+          })
+          .to(".pContainer, .sparkle", {
+            duration: 1,
+            onStart: function () {
+              showParticle = false;
+            },
+            x: treeBottomPath[0].x,
+            y: treeBottomPath[0].y,
+          })
+          .to(
+            ".pContainer, .sparkle",
+            {
+              duration: 2,
+              onStart: function () {
+                showParticle = true;
+              },
+              motionPath: {
+                path: ".treeBottomPath",
+                autoRotate: false,
+              },
+              ease: "linear",
+            },
+            "-=0"
+          )
+          .from(
+            ".treeBottomMask",
+            {
+              duration: 2,
+              drawSVG: "0% 0%",
+              stroke: "#FFF",
+              ease: "linear",
+            },
+            "-=2"
+          );
+      }
+
+      function drawMain() {
+        mainTl
+          .from([".treePathMask", ".treePotMask"], {
+            duration: 6,
+            drawSVG: "0% 0%",
+            stroke: "#FFF",
+            stagger: {
+              each: 6,
+            },
+            duration: gsap.utils.wrap([6, 1, 2]),
+            ease: "linear",
+          })
+          .from(
+            ".treeStar",
+            {
+              duration: 3,
+              scaleY: 0,
+              scaleX: 0.15,
+              transformOrigin: "50% 50%",
+              ease: "elastic(1,0.5)",
+            },
+            "-=4"
+          )
+          .to(
+            ".sparkle",
+            {
+              duration: 3,
+              opacity: 0,
+              ease: "rough({strength: 2, points: 100, template: linear, taper: both, randomize: true, clamp: false})",
+            },
+            "-=0"
+          )
+          .to(
+            ".treeStarOutline",
+            {
+              duration: 1,
+              opacity: 0.3,
+              ease: "rough({strength: 2, points: 16, template: linear, taper: none, randomize: true, clamp: false})",
+            },
+            "+=1"
+          );
+      }
+
+      function drawStars() {
+        let canvas = document.getElementById("stars"),
+          ctx = canvas.getContext("2d"),
+          w = (canvas.width = window.innerWidth),
+          h = (canvas.height = window.innerHeight),
+          hue = 37,
+          stars = [],
+          count = 0,
+          maxStars = 1300;
+
+        var canvas2 = document.createElement("canvas"),
+          ctx2 = canvas2.getContext("2d");
+        canvas2.width = 100;
+        canvas2.height = 100;
+        var half = canvas2.width / 2,
+          gradient2 = ctx2.createRadialGradient(
+            half,
+            half,
+            0,
+            half,
+            half,
+            half
+          );
+        gradient2.addColorStop(0.025, "#CCC");
+        gradient2.addColorStop(0.1, "hsl(" + hue + ", 61%, 10%)");
+        gradient2.addColorStop(0.25, "hsl(" + hue + ", 64%, 2%)");
+        gradient2.addColorStop(1, "transparent");
+
+        ctx2.fillStyle = gradient2;
+        ctx2.beginPath();
+        ctx2.arc(half, half, half, 0, Math.PI * 2);
+        ctx2.fill();
+
+        function random(min, max) {
+          if (arguments.length < 2) {
+            max = min;
+            min = 0;
+          }
+
+          if (min > max) {
+            var hold = max;
+            max = min;
+            min = hold;
+          }
+
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function maxOrbit(x, y) {
+          var max = Math.max(x, y),
+            diameter = Math.round(Math.sqrt(max * max + max * max));
+          return diameter / 2;
+        }
+
+        var Star = function () {
+          this.orbitRadius = random(maxOrbit(w, h));
+          this.radius = random(60, this.orbitRadius) / 8;
+          this.orbitX = w / 2;
+          this.orbitY = h / 2;
+          this.timePassed = random(0, maxStars);
+          this.speed = random(this.orbitRadius) / 50000;
+          this.alpha = random(2, 10) / 10;
+
+          count++;
+          stars[count] = this;
+        };
+
+        Star.prototype.draw = function () {
+          var x = Math.sin(this.timePassed) * this.orbitRadius + this.orbitX,
+            y = Math.cos(this.timePassed) * this.orbitRadius + this.orbitY,
+            twinkle = random(10);
+
+          if (twinkle === 1 && this.alpha > 0) {
+            this.alpha -= 0.05;
+          } else if (twinkle === 2 && this.alpha < 1) {
+            this.alpha += 0.05;
+          }
+
+          ctx.globalAlpha = this.alpha;
+          ctx.drawImage(
+            canvas2,
+            x - this.radius / 2,
+            y - this.radius / 2,
+            this.radius,
+            this.radius
+          );
+          this.timePassed += this.speed;
+        };
+
+        for (var i = 0; i < maxStars; i++) {
+          new Star();
+        }
+
+        function animation() {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.globalAlpha = 0.9;
+          ctx.fillStyle = "hsla(" + hue + ", 64%, 6%, 2)";
+          ctx.fillRect(0, 0, w, h);
+
+          ctx.globalCompositeOperation = "lighter";
+          for (var i = 1, l = stars.length; i < l; i++) {
+            stars[i].draw();
+          }
+
+          window.requestAnimationFrame(animation);
+        }
+
+        animation();
+      }
+
+      let myLabels = [
+        "亲爱的岩宝",
+        "Merry Christmas",
+        "健健康康，平安喜乐",
+        "愿你每天开开心心，快快乐乐",
+      ];
+
+      function init() {
+        let element = document.getElementById("header");
+        for (let i = 0; i < myLabels.length; i++) {
+          let _p = document.createElement("p");
+          _p.className = "header-item";
+          _p.innerHTML = myLabels[i];
+          element.appendChild(_p);
+        }
+
+        let labels = document.getElementsByClassName("header-item");
+        for (let i = 0; i < myLabels.length; i++) {
+          setTimeout(() => {
+            labels[i].classList.add("show");
+          }, 1000 * i);
+        }
+      }
+
+      let init_flag = false;
+      // music
+      let music_url =
+        "https://sf5-hl-cdn-tos.douyinstatic.com/obj/tos-cn-ve-2774/e07cd463647740e3ae18741a092945d6";
+      let _music = new Audio(music_url);
+      window.onclick = function () {
+        if (init_flag) return;
+        init_flag = true;
+        _music.play();
+        init();
+        let mask = document.getElementById("mask");
+        mask.remove();
+        createParticles();
+        drawStar();
+        drawMain();
+        mainTl.add(starTl, 0);
+        gsap.globalTimeline.timeScale(1.5);
+        drawStars();
+      };
+    </script>
+  </body>
+</html>

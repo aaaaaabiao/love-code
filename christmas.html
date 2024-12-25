@@ -531,44 +531,42 @@
 
     var getScale = gsap.utils.random(0.5, 3, 0.001, true); //  圣诞树开始绘画时小光点动画的特效（参数：最小值，最大值，延迟）
 
-    function playParticle(p) {
-      if (!showParticle) {
-        return;
-      }
-      var p = particlePool[particleCount];
-      gsap.set(p, {
-        x: gsap.getProperty(".pContainer", "x"),
-        y: gsap.getProperty(".pContainer", "y"),
-        scale: getScale(),
-      });
-      var tl = gsap.timeline();
-      tl.to(p, {
-        duration: gsap.utils.random(0.61, 6),
-        physics2D: {
-          velocity: gsap.utils.random(-23, 23),
-          angle: gsap.utils.random(-180, 180),
-          gravity: gsap.utils.random(-6, 50),
-        },
-        scale: 0,
-        rotation: gsap.utils.random(-123, 360),
-        ease: "power1",
-        onStart: flicker,
-        onStartParams: [p],
-        //repeat:-1,
-        onRepeat: (p) => {
-          gsap.set(p, {
-            scale: getScale(),
-          });
-        },
-        onRepeatParams: [p],
-      });
+    function playParticle() {
+  if (!showParticle) return;
+  
+  var p = particlePool[particleCount];
+  
+  gsap.set(p, {
+    x: gsap.getProperty(".pContainer", "x"),
+    y: gsap.getProperty(".pContainer", "y"),
+    scale: getScale(),
+    opacity: 1
+  });
 
-      //
-      //particlePool[particleCount].play();
-      particleCount++;
-      //mainTl.add(tl, i / 1.3)
-      particleCount = particleCount >= numParticles ? 0 : particleCount;
-    }
+  // 创建弹跳效果
+  gsap.to(p, {
+    duration: gsap.utils.random(1.5, 3),
+    x: `+=${gsap.utils.random(-150, 150)}`,
+    y: `+=${gsap.utils.random(-100, 100)}`,
+    scale: 0,
+    rotation: gsap.utils.random(-360, 360),
+    ease: "bounce.out",
+    onStart: flicker,
+    onStartParams: [p]
+  });
+
+  // 淡出效果
+  gsap.to(p, {
+    duration: 0.5,
+    opacity: 0,
+    delay: gsap.utils.random(1, 2),
+    ease: "power1.in"
+  });
+
+  particleCount++;
+  particleCount = particleCount >= numParticles ? 0 : particleCount;
+}
+
     // 圣诞树开始绘画时小光点动画
     function drawStar() {
       starTl = gsap.timeline({ onUpdate: playParticle });
@@ -811,7 +809,7 @@ function drawStars() {
 
 
     let myLabels = [
-      "亲爱的岩宝",
+      "亲爱的小灰灰",
       "Merry Christmas",
       "健健康康，平安喜乐",
       "愿你每天开开心心，快快乐乐",
